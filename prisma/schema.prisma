@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(uuid())
+  name String
+  email String
+  sentMessages Message[] @relation("sentMessages")
+  recievedMessages Message[] @relation("recievedMessages")
+  isAdmin Boolean @default(false)
+}
+
+model Message {
+  id  String @id @default(uuid())
+  sender  User  @relation(name: "sentMessages", fields: [senderId], references: [id])
+  senderId   String
+  receiver  User @relation(name: "recievedMessages", fields: [recieverId], references: [id])
+  recieverId String
+  sentDate DateTime @default(now())
+  title     String
+  content   String
+  attachment String[]
+}
+
+model Order {
+  id  Int @id @default(autoincrement())
+  stripeId  String
+  orderTime DateTime @default(now())
+  products ProductOrders[]
+}
+
+model Product{
+  id Int @id @default(autoincrement())
+  stripeId String?
+  priceCurrency String @default("USD")
+  price Int
+  orders ProductOrders[]
+  createdAt DateTime
+  modifiedAt DateTime?
+  images String[]
+}
+model ProductOrders {
+  id Int @id @default(autoincrement())
+  quantity Int? @default(1)
+  order Order? @relation(fields: [orderId], references: [id])
+  orderId Int?
+  product Product? @relation(fields: [productId], references: [id])
+  productId Int?
+}

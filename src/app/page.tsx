@@ -7,8 +7,6 @@ import { OrderState } from "../../lib/types";
 export default function Home() {
   return (
     <main className="">
-      <Nav />
-
       <div className="ml-[250px]">
         <div className="flex">
           <Order
